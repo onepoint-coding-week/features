@@ -193,6 +193,13 @@ a { color: inherit; }
 }
 .card__more:hover { text-decoration: underline; }
 
+.person-link {
+  color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 70%, transparent);
+  text-decoration-thickness: 2px; text-underline-offset: 4px;
+}
+.person-link:hover { color: var(--blue-light); }
+.card__person { margin: 2px 0 0; font-size: .8rem; font-weight: 300; color: var(--muted); }
+
 /* Fenêtre de détail d'une feature */
 body:has(.details[open]) { overflow: hidden; }
 
@@ -228,6 +235,16 @@ body:has(.details[open]) { overflow: hidden; }
 .details__teams { display: flex; flex-wrap: wrap; gap: 8px; }
 .details__teams .tag { margin-top: 0; }
 .details__needs { margin: 0; color: var(--mist); }
+
+.about__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 0; color: var(--muted); }
+.about__known {
+  padding: 4px 14px; border-radius: 999px; font-weight: 600; color: var(--white);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.about__summary { margin: 0; font-size: 1.1rem; font-weight: 300; line-height: 1.7; color: var(--mist); }
+.about__links { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin: 24px 0 0; }
+.about__links .tag { margin-top: 0; }
 
 .details__block { padding-top: 24px; }
 .details__block h3 {

@@ -26,7 +26,7 @@ const isExtra = (feature, teams) => feature.extra || teams.length === 0;
 const teamTag = (team) => el("a", { class: "tag", href: `#team-${pad(team.number)}` },
   el("span", { class: "tag__dot" }), `Team ${pad(team.number)} · ${team.name}`);
 
-function teamCard(team, feature) {
+function teamCard(team, feature, person) {
   const members = el("ul", { class: "members", "aria-label": "Members" },
     ...team.members.map((name) => el("li", {}, name)));
   return el("article", {
@@ -37,7 +37,9 @@ function teamCard(team, feature) {
       el("span", { class: "card__number", "aria-hidden": "true" }, pad(team.number)),
       el("div", {},
         el("p", { class: "card__label" }, `Team ${pad(team.number)}`),
-        el("h3", { class: "card__title" }, team.name))),
+        el("h3", { class: "card__title" },
+          el("a", { class: "person-link", href: `#about-${pad(team.number)}`, title: `Who was ${team.name}?` }, team.name)),
+        person ? el("p", { class: "card__person" }, person.known_for) : null)),
     members,
     el("a", { class: "tag", href: `#details-${pad(feature.number)}`, title: "See the feature" },
       el("span", { class: "tag__dot" }), `#${pad(feature.number)} · ${feature.title}`));
@@ -147,28 +149,53 @@ function detailsContent(feature, teams) {
   return [head, where, how, ...spec, done];
 }
 
-function setupDetails(features, teamsOf) {
+function aboutContent(team, person, feature) {
+  return [
+    el("header", { class: "details__head" },
+      el("div", { class: "card__top" },
+        el("span", { class: "card__number", "aria-hidden": "true" }, pad(team.number)),
+        el("div", {},
+          el("p", { class: "card__label" }, `Team ${pad(team.number)} is named after`),
+          el("h2", { class: "details__title", id: "details-title" }, team.name))),
+      el("p", { class: "about__meta" },
+        el("span", { class: "about__known" }, person.known_for), el("span", {}, person.years))),
+    el("section", { class: "details__block" },
+      el("p", { class: "about__summary" }, person.summary),
+      el("p", { class: "about__links" },
+        el("a", { href: person.wikipedia, target: "_blank", rel: "noopener" }, "Read more on Wikipedia ↗"),
+        el("a", { class: "tag", href: `#details-${pad(feature.number)}` },
+          el("span", { class: "tag__dot" }), `Their feature: #${pad(feature.number)} · ${feature.title}`))),
+  ];
+}
+
+function setupDetails(features, teams, people) {
   const dialog = document.getElementById("details");
   const body = document.getElementById("details-body");
   const byNumber = new Map(features.map((feature) => [feature.number, feature]));
+  const teamsOf = (number) => teams.filter((team) => team.feature === number);
 
-  const open = (number) => {
-    const feature = byNumber.get(number);
-    if (!feature) return;
-    body.style.setProperty("--accent", accentOf(number));
-    body.replaceChildren(...detailsContent(feature, teamsOf(number)));
+  const show = (accent, content) => {
+    body.style.setProperty("--accent", accent);
+    body.replaceChildren(...content);
     if (!dialog.open) dialog.showModal();
     dialog.scrollTop = 0;
   };
 
   const route = () => {
-    const match = location.hash.match(/^#details-(\d+)$/);
-    if (match) open(Number(match[1]));
-    else if (dialog.open) dialog.close();
+    const match = location.hash.match(/^#(details|about)-(\d+)$/);
+    const number = match && Number(match[2]);
+    if (match?.[1] === "details" && byNumber.has(number)) {
+      show(accentOf(number), detailsContent(byNumber.get(number), teamsOf(number)));
+    } else if (match?.[1] === "about" && people[teams.find((team) => team.number === number)?.name]) {
+      const team = teams.find((candidate) => candidate.number === number);
+      show(accentOf(team.feature), aboutContent(team, people[team.name], byNumber.get(team.feature)));
+    } else if (dialog.open) {
+      dialog.close();
+    }
   };
 
   dialog.addEventListener("close", () => {
-    if (location.hash.startsWith("#details-")) history.replaceState(null, "", location.pathname + location.search);
+    if (/^#(details|about)-/.test(location.hash)) history.replaceState(null, "", location.pathname + location.search);
   });
   // Un clic sur le fond (hors du panneau) ferme la fenêtre.
   dialog.addEventListener("click", (event) => {
@@ -227,8 +254,8 @@ function setupSearch(cards) {
 }
 
 async function main() {
-  const [teams, features] = await Promise.all(
-    ["teams.json", "features.json"].map((url) => fetch(url).then((response) => {
+  const [teams, features, people] = await Promise.all(
+    ["teams.json", "features.json", "people.json"].map((url) => fetch(url).then((response) => {
       if (!response.ok) throw new Error(`${url}: ${response.status}`);
       return response.json();
     })));
@@ -238,7 +265,7 @@ async function main() {
   const teamGrid = document.getElementById("team-grid");
   const cards = teams.map((team) => {
     const feature = byNumber.get(team.feature);
-    const card = teamCard(team, feature);
+    const card = teamCard(team, feature, people[team.name]);
     teamGrid.append(card);
     const haystack = fold([pad(team.number), String(team.number), team.name,
       feature.title, `#${pad(feature.number)}`, ...team.members].join(" | "));
@@ -252,10 +279,10 @@ async function main() {
 
   linkHover(document.querySelector("main"));
   setupSearch(cards);
-  setupDetails(features, teamsOf);
+  setupDetails(features, teams, people);
 
   // Les cartes n'existent qu'après le rendu : on rejoue l'ancre de l'URL.
-  if (location.hash && !location.hash.startsWith("#details-")) {
+  if (location.hash && !/^#(details|about)-/.test(location.hash)) {
     document.querySelector(location.hash)?.scrollIntoView();
   }
 }

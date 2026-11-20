@@ -1,0 +1,122 @@
+{
+  "Ada Lovelace": {
+    "years": "1815–1852",
+    "known_for": "The first programmer",
+    "summary": "English mathematician and writer. Working on Charles Babbage's Analytical Engine, a mechanical computer that was never built, she published in 1843 a method to compute Bernoulli numbers with it, often seen as the first computer program. She was also the first to see that such a machine could do more than calculate, for example compose music.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Ada_Lovelace"
+  },
+  "Alan Turing": {
+    "years": "1912–1954",
+    "known_for": "Father of theoretical computer science",
+    "summary": "English mathematician and logician. His Turing machine (1936) gave a precise meaning to “algorithm” and “computation”. During the Second World War, he helped break the German Enigma codes at Bletchley Park. He also proposed the Turing test, to ask whether a machine can think. The highest prize in computer science, the Turing Award, bears his name.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Alan_Turing"
+  },
+  "Grace Hopper": {
+    "years": "1906–1992",
+    "known_for": "Compiler pioneer",
+    "summary": "American computer scientist and US Navy rear admiral, one of the first programmers of the Harvard Mark I. She believed programs should be written in words close to English, not in machine code. She is often credited with the first compiler, and her FLOW-MATIC language strongly influenced COBOL, still running in banks and administrations today.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Grace_Hopper"
+  },
+  "Charles Babbage": {
+    "years": "1791–1871",
+    "known_for": "Father of the computer",
+    "summary": "English mathematician, inventor and mechanical engineer. He designed the Difference Engine, a mechanical calculator, then the Analytical Engine, programmed with a principle borrowed from the Jacquard loom, which already held the key ideas of a modern computer. He never finished them, but a Difference Engine built in 1991 from his original plans works.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Charles_Babbage"
+  },
+  "Katherine Johnson": {
+    "years": "1918–2020",
+    "known_for": "NASA's human computer",
+    "summary": "American mathematician. At NASA and its predecessor NACA, she calculated the trajectories of the first American crewed spaceflights. When NASA first used electronic computers for John Glenn's orbit in 1962, Glenn refused to fly until she had checked the numbers herself. Her story is told in the film Hidden Figures.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Katherine_Johnson"
+  },
+  "John von Neumann": {
+    "years": "1903–1957",
+    "known_for": "Architect of the modern computer",
+    "summary": "Hungarian-American mathematician and physicist with an extraordinary range: quantum mechanics, game theory, economics, statistics. In 1945, he described a computer that keeps its program in the same memory as its data. This “von Neumann architecture” is still the basis of almost every computer today.",
+    "wikipedia": "https://en.wikipedia.org/wiki/John_von_Neumann"
+  },
+  "Margaret Hamilton": {
+    "years": "1936–2026",
+    "known_for": "She named software engineering",
+    "summary": "American computer scientist. At MIT, she led the development of the on-board flight software of the Apollo Guidance Computer, which took astronauts to the Moon. She coined the term “software engineering” so that software would be treated with the same rigour as hardware, and received the Presidential Medal of Freedom in 2016.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Margaret_Hamilton_(software_engineer)"
+  },
+  "Tim Berners-Lee": {
+    "years": "born 1955",
+    "known_for": "Inventor of the World Wide Web",
+    "summary": "English computer scientist. While at CERN in 1989, he proposed the World Wide Web, then built its foundations: HTML, URLs and HTTP, with the first web browser and server. He chose to make his idea freely available, with no patent and no royalties. He received the 2016 Turing Award.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Tim_Berners-Lee"
+  },
+  "Barbara Liskov": {
+    "years": "born 1939",
+    "known_for": "Data abstraction",
+    "summary": "American computer scientist and MIT professor. She introduced abstract data types, an idea behind today's classes and interfaces, and the Liskov substitution principle: a subtype must work wherever its parent type is expected (the “L” of SOLID). One of the first women to earn a PhD in computer science in the US, she received the 2008 Turing Award.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Barbara_Liskov"
+  },
+  "Linus Torvalds": {
+    "years": "born 1969",
+    "known_for": "Creator of Linux and Git",
+    "summary": "Finnish-American software engineer. In 1991, as a student in Helsinki, he started the Linux kernel, which now runs most servers, Android phones and every one of the world's largest supercomputers. In 2005 he created Git, the version control system you use this week to share your code.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Linus_Torvalds"
+  },
+  "Frances Allen": {
+    "years": "1932–2020",
+    "known_for": "Compiler optimization pioneer",
+    "summary": "American computer scientist who worked at IBM from 1957 to 2002. Her work on optimizing compilers and parallel computing made programs run faster without making them harder to write. She was the first woman to become an IBM Fellow and, in 2006, the first woman to receive the Turing Award.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Frances_Allen"
+  },
+  "Donald Knuth": {
+    "years": "born 1938",
+    "known_for": "Father of the analysis of algorithms",
+    "summary": "American computer scientist, professor emeritus at Stanford. He is the author of The Art of Computer Programming, a reference work on algorithms that he started in the 1960s and is still writing. Unhappy with how his books were typeset, he created TeX, still widely used for scientific papers. He received the 1974 Turing Award.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Donald_Knuth"
+  },
+  "Shafi Goldwasser": {
+    "years": "born 1959",
+    "known_for": "Foundations of modern cryptography",
+    "summary": "Israeli-American computer scientist, professor at MIT and at the Weizmann Institute. Her work on probabilistic encryption underlies most public-key cryptography, and in 1985 she co-introduced zero-knowledge proofs: proving that a statement is true without revealing anything else. She received the 2012 Turing Award with Silvio Micali.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Shafi_Goldwasser"
+  },
+  "Dennis Ritchie": {
+    "years": "1941–2011",
+    "known_for": "Creator of C and Unix",
+    "summary": "American computer scientist at Bell Labs. With Ken Thompson, he created the Unix operating system, and he designed the C programming language to write it. Unix inspired Linux, macOS and Android, and C is still everywhere: the Python interpreter you use this week is written in it. He received the 1983 Turing Award with Thompson.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Dennis_Ritchie"
+  },
+  "Katie Bouman": {
+    "years": "born 1989",
+    "known_for": "First image of a black hole",
+    "summary": "American engineer and computer scientist working on computational imaging, now a professor at Caltech. She led the development of CHIRP, an algorithm that rebuilds images of black holes from sparse telescope data. She was a member of the Event Horizon Telescope team that published the first image of a black hole in April 2019.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Katie_Bouman"
+  },
+  "Edsger Dijkstra": {
+    "years": "1930–2002",
+    "known_for": "Shortest paths and structured programming",
+    "summary": "Dutch computer scientist, the first computer programmer in the Netherlands. In 1956, he solved the shortest path problem: Dijkstra's algorithm still guides route planners and network routing. He fought for clear, provable programs, as in his famous letter “Go To Statement Considered Harmful”, and received the 1972 Turing Award.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Edsger_W._Dijkstra"
+  },
+  "Anita Borg": {
+    "years": "1949–2003",
+    "known_for": "Champion of women in technology",
+    "summary": "American computer scientist who worked on operating systems and high-speed memory systems. In 1987, she founded Systers, the first email network for women in technology. She also founded the Grace Hopper Celebration of Women in Computing in 1994 and the Institute for Women and Technology, now AnitaB.org.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Anita_Borg"
+  },
+  "Steve Wozniak": {
+    "years": "born 1950",
+    "known_for": "Apple co-founder",
+    "summary": "American engineer and programmer, nicknamed “Woz”. He co-founded Apple with Steve Jobs in 1976 and designed the Apple I, then the Apple II, one of the first highly successful mass-produced personal computers. After leaving Apple, he devoted much of his time to bringing technology into schools.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Steve_Wozniak"
+  },
+  "Mary Jackson": {
+    "years": "1921–2005",
+    "known_for": "NASA's first black female engineer",
+    "summary": "American mathematician and aerospace engineer. She started in 1951 as a “human computer” in the segregated West Area Computing unit at Langley and, in 1958, became NASA's first black female engineer. She later helped women get hired and promoted at NASA, whose Washington headquarters now bears her name.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Mary_Jackson_(engineer)"
+  },
+  "Jack Kilby": {
+    "years": "1923–2005",
+    "known_for": "Inventor of the integrated circuit",
+    "summary": "American electrical engineer. At Texas Instruments in 1958, he built the first integrated circuit, several electronic components on a single piece of semiconductor, an idea Robert Noyce also developed at Fairchild. Every modern chip comes from it, and it earned Kilby the 2000 Nobel Prize in Physics. He also co-invented the handheld calculator.",
+    "wikipedia": "https://en.wikipedia.org/wiki/Jack_Kilby"
+  }
+}
