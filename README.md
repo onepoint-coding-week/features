@@ -8,7 +8,7 @@ The site is published at <https://onepoint-coding-week.github.io/features/>.
 | File | What it holds |
 |---|---|
 | `site/teams.json` | The 20 teams: number, name, members (first name and initial), feature number |
-| `site/features.json` | Every feature: number, title, goal, folder name (`slug`) and the sections of its card (`sections`, in HTML), shown when a feature is clicked. `extra: true` marks the features for teams that finish early, `needs` the features they build on |
+| `site/features.json` | Every feature: number, title, goal, folder name (`slug`) and the sections of its card (`sections`, in HTML), shown when a feature is clicked. `extra: true` marks the extra features; the page also lists every feature without a team among them. `needs`: the features an extra one builds on |
 | `site/index.html`, `style.css`, `app.js` | The page. It reads the two JSON files: no build step |
 | `site/assets/` | Visuals and logos from the Coding Week template |
 | `.github/workflows/pages.yml` | Publishes `site/` on GitHub Pages at every push on `main` |

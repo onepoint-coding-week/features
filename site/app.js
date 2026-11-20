@@ -20,6 +20,9 @@ function el(tag, attrs = {}, ...children) {
 
 const code = (text) => el("code", {}, text);
 
+// Une feature sans équipe cette semaine rejoint les features extra.
+const isExtra = (feature, teams) => feature.extra || teams.length === 0;
+
 const teamTag = (team) => el("a", { class: "tag", href: `#team-${pad(team.number)}` },
   el("span", { class: "tag__dot" }), `Team ${pad(team.number)} · ${team.name}`);
 
@@ -42,7 +45,7 @@ function teamCard(team, feature) {
 
 function featureCard(feature, teams) {
   const card = el("article", {
-    class: feature.extra ? "card card--feature card--extra" : "card card--feature",
+    class: isExtra(feature, teams) ? "card card--feature card--extra" : "card card--feature",
     id: `feature-${pad(feature.number)}`, style: `--accent: ${accentOf(feature.number)}`,
     "data-feature": feature.number,
   },
@@ -51,7 +54,6 @@ function featureCard(feature, teams) {
       el("h3", { class: "card__title" }, feature.title)),
     el("p", { class: "card__text" }, feature.goal));
   for (const team of teams) card.append(teamTag(team));
-  if (!teams.length && !feature.extra) card.append(el("p", { class: "card__note" }, "No team this week"));
   card.append(el("a", { class: "card__more", href: `#details-${pad(feature.number)}` },
     "See the details", el("span", { "aria-hidden": "true" }, " →")));
   return card;
@@ -63,7 +65,8 @@ function steps(slug) {
     ["Understand", [
       "Read this card, then the whole test file ", code(`tests/test_${slug}.py`),
       ", slowly: for each test, write in your own words what it checks. Then read ",
-      code("app/features/00_example/"), " and the complete example ", code("app/features/02_participants/"), ".",
+      code("app/features/00_example/"),
+      ...(slug.startsWith("02_") ? [] : [" and the complete example ", code("app/features/02_participants/")]), ".",
     ]],
     ["Make the tests pass", [
       "Create ", code(`app/features/${slug}/logic.py`), ". Run the tests, pick one failing test, ",
@@ -112,7 +115,7 @@ function detailsContent(feature, teams) {
     el("div", { class: "card__top" },
       el("span", { class: "card__number", "aria-hidden": "true" }, pad(feature.number)),
       el("div", {},
-        el("p", { class: "card__label" }, feature.extra ? `Extra feature ${pad(feature.number)}` : `Feature ${pad(feature.number)}`),
+        el("p", { class: "card__label" }, isExtra(feature, teams) ? `Extra feature ${pad(feature.number)}` : `Feature ${pad(feature.number)}`),
         el("h2", { class: "details__title", id: "details-title" }, feature.title))),
     el("p", { class: "details__goal" }, feature.goal));
   if (teams.length) head.append(el("div", { class: "details__teams" }, ...teams.map(teamTag)));
@@ -243,7 +246,7 @@ async function main() {
   });
 
   for (const feature of features) {
-    const grid = document.getElementById(feature.extra ? "extra-grid" : "feature-grid");
+    const grid = document.getElementById(isExtra(feature, teamsOf(feature.number)) ? "extra-grid" : "feature-grid");
     grid.append(featureCard(feature, teamsOf(feature.number)));
   }
 
