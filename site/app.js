@@ -11,11 +11,17 @@ function el(tag, attrs = {}, ...children) {
   for (const [key, value] of Object.entries(attrs)) {
     if (key === "class") node.className = value;
     else if (key === "style") node.style.cssText = value;
+    else if (key === "html") node.innerHTML = value;
     else node.setAttribute(key, value);
   }
   node.append(...children.filter((child) => child !== null && child !== undefined));
   return node;
 }
+
+const code = (text) => el("code", {}, text);
+
+const teamTag = (team) => el("a", { class: "tag", href: `#team-${pad(team.number)}` },
+  el("span", { class: "tag__dot" }), `Team ${pad(team.number)} · ${team.name}`);
 
 function teamCard(team, feature) {
   const members = el("ul", { class: "members", "aria-label": "Members" },
@@ -30,13 +36,13 @@ function teamCard(team, feature) {
         el("p", { class: "card__label" }, `Team ${pad(team.number)}`),
         el("h3", { class: "card__title" }, team.name))),
     members,
-    el("a", { class: "tag", href: `#feature-${pad(feature.number)}` },
+    el("a", { class: "tag", href: `#details-${pad(feature.number)}`, title: "See the feature" },
       el("span", { class: "tag__dot" }), `#${pad(feature.number)} · ${feature.title}`));
 }
 
 function featureCard(feature, teams) {
   const card = el("article", {
-    class: teams.length ? "card" : feature.extra ? "card card--extra" : "card card--free",
+    class: feature.extra ? "card card--feature card--extra" : "card card--feature",
     id: `feature-${pad(feature.number)}`, style: `--accent: ${accentOf(feature.number)}`,
     "data-feature": feature.number,
   },
@@ -44,22 +50,149 @@ function featureCard(feature, teams) {
       el("span", { class: "card__number", "aria-hidden": "true" }, pad(feature.number)),
       el("h3", { class: "card__title" }, feature.title)),
     el("p", { class: "card__text" }, feature.goal));
-  if (teams.length) {
-    for (const team of teams) {
-      card.append(el("a", { class: "tag", href: `#team-${pad(team.number)}` },
-        el("span", { class: "tag__dot" }), `Team ${pad(team.number)} · ${team.name}`));
-    }
-  } else if (!feature.extra) {
-    card.append(el("p", { class: "card__free" }, "Not assigned this week"));
-  }
+  for (const team of teams) card.append(teamTag(team));
+  if (!teams.length && !feature.extra) card.append(el("p", { class: "card__note" }, "No team this week"));
+  card.append(el("a", { class: "card__more", href: `#details-${pad(feature.number)}` },
+    "See the details", el("span", { "aria-hidden": "true" }, " →")));
   return card;
+}
+
+// Étapes de la méthode du guide étudiant, appliquées aux chemins de la feature.
+function steps(slug) {
+  return [
+    ["Understand", [
+      "Read this card, then the whole test file ", code(`tests/test_${slug}.py`),
+      ", slowly: for each test, write in your own words what it checks. Then read ",
+      code("app/features/00_example/"), " and the complete example ", code("app/features/02_participants/"), ".",
+    ]],
+    ["Make the tests pass", [
+      "Create ", code(`app/features/${slug}/logic.py`), ". Run the tests, pick one failing test, ",
+      "write the smallest code that makes it pass, run again, commit. Repeat.",
+    ]],
+    ["Build the page", [
+      "Create ", code("page.py"), " in the same folder and load your code with ",
+      code(`import_module("features.${slug}.logic")`), ". Explain the empty cases with ",
+      code("st.info"), ": the page must open for the three demo groups.",
+    ]],
+    ["Polish and deliver", [
+      "Edge cases, the ideas of “Going further”, the whole project green, then a pull request and a 5-minute demo.",
+    ]],
+  ];
+}
+
+function doneList(slug) {
+  return [
+    [code(`uv run pytest tests/test_${slug}.py`), ": all green"],
+    [code("uv run pytest"), ": the whole project is still green"],
+    ["The page opens in the app for the three groups, with no error and sensible empty states"],
+    ["No secret leaked: nobody sees who gives to whom, except their own receiver"],
+    ["No change outside your folder and your test file"],
+    ["Pull request opened, with a short description"],
+    ["Demo prepared"],
+  ];
+}
+
+function commandLine(command) {
+  const button = el("button", { class: "copy", type: "button", "aria-label": `Copy: ${command}` }, "Copy");
+  button.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(command);
+      button.textContent = "Copied";
+    } catch {
+      button.textContent = "Select it";
+    }
+    setTimeout(() => { button.textContent = "Copy"; }, 1500);
+  });
+  return el("li", {}, el("code", {}, command), button);
+}
+
+function detailsContent(feature, teams) {
+  const { slug } = feature;
+  const head = el("header", { class: "details__head" },
+    el("div", { class: "card__top" },
+      el("span", { class: "card__number", "aria-hidden": "true" }, pad(feature.number)),
+      el("div", {},
+        el("p", { class: "card__label" }, feature.extra ? `Extra feature ${pad(feature.number)}` : `Feature ${pad(feature.number)}`),
+        el("h2", { class: "details__title", id: "details-title" }, feature.title))),
+    el("p", { class: "details__goal" }, feature.goal));
+  if (teams.length) head.append(el("div", { class: "details__teams" }, ...teams.map(teamTag)));
+  if (feature.needs && feature.needs !== "none") {
+    head.append(el("p", { class: "details__needs", html: `<strong>Needs:</strong> ${feature.needs}` }));
+  }
+
+  const where = el("section", { class: "details__block" },
+    el("h3", {}, "Where you work"),
+    el("ul", { class: "files" },
+      el("li", {}, el("span", {}, "Your folder"), code(`app/features/${slug}/`)),
+      el("li", {}, el("span", {}, "Your tests"), code(`tests/test_${slug}.py`))),
+    el("ul", { class: "commands", "aria-label": "Commands" },
+      commandLine(`uv run pytest tests/test_${slug}.py -x`),
+      commandLine("uv run streamlit run app/app.py")));
+
+  const how = el("section", { class: "details__block" },
+    el("h3", {}, "Steps"),
+    el("ol", { class: "steps" }, ...steps(slug).map(([title, text]) =>
+      el("li", {}, el("strong", {}, title), el("p", {}, ...text)))));
+
+  const spec = feature.sections.map((section) => el("section", { class: "details__block spec" },
+    el("h3", {}, section.title), el("div", { class: "spec__body", html: section.html })));
+
+  const done = el("section", { class: "details__block" },
+    el("h3", {}, "Definition of done"),
+    el("ul", { class: "done" }, ...doneList(slug).map((item) => el("li", {}, ...item))));
+
+  return [head, where, how, ...spec, done];
+}
+
+function setupDetails(features, teamsOf) {
+  const dialog = document.getElementById("details");
+  const body = document.getElementById("details-body");
+  const byNumber = new Map(features.map((feature) => [feature.number, feature]));
+
+  const open = (number) => {
+    const feature = byNumber.get(number);
+    if (!feature) return;
+    body.style.setProperty("--accent", accentOf(number));
+    body.replaceChildren(...detailsContent(feature, teamsOf(number)));
+    if (!dialog.open) dialog.showModal();
+    dialog.scrollTop = 0;
+  };
+
+  const route = () => {
+    const match = location.hash.match(/^#details-(\d+)$/);
+    if (match) open(Number(match[1]));
+    else if (dialog.open) dialog.close();
+  };
+
+  dialog.addEventListener("close", () => {
+    if (location.hash.startsWith("#details-")) history.replaceState(null, "", location.pathname + location.search);
+  });
+  // Un clic sur le fond (hors du panneau) ferme la fenêtre.
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  document.getElementById("details-close").addEventListener("click", () => dialog.close());
+  // Le lien vers une équipe doit fermer la fenêtre avant que le navigateur ne défile.
+  body.addEventListener("click", (event) => {
+    if (event.target.closest('a[href^="#team-"]')) dialog.close();
+  });
+
+  // Toute la carte d'une feature est cliquable, sauf ses propres liens.
+  document.querySelector("main").addEventListener("click", (event) => {
+    const card = event.target.closest(".card--feature");
+    if (!card || event.target.closest("a")) return;
+    location.hash = `details-${pad(card.dataset.feature)}`;
+  });
+
+  window.addEventListener("hashchange", route);
+  route();
 }
 
 // Le survol d'une carte éclaire sa jumelle (équipe ↔ feature) dans l'autre section.
 function linkHover(root) {
   const toggle = (event, on) => {
     const card = event.target.closest(".card[data-feature]");
-    if (!card || card.classList.contains("card--free")) return;
+    if (!card) return;
     const number = card.dataset.feature;
     for (const other of root.querySelectorAll(`.card[data-feature="${number}"]`)) {
       if (other !== card) other.classList.toggle("is-linked", on);
@@ -97,6 +230,7 @@ async function main() {
       return response.json();
     })));
   const byNumber = new Map(features.map((feature) => [feature.number, feature]));
+  const teamsOf = (number) => teams.filter((team) => team.feature === number);
 
   const teamGrid = document.getElementById("team-grid");
   const cards = teams.map((team) => {
@@ -108,7 +242,6 @@ async function main() {
     return { card, haystack, items: [...card.querySelectorAll(".members li")] };
   });
 
-  const teamsOf = (number) => teams.filter((team) => team.feature === number);
   for (const feature of features) {
     const grid = document.getElementById(feature.extra ? "extra-grid" : "feature-grid");
     grid.append(featureCard(feature, teamsOf(feature.number)));
@@ -116,9 +249,12 @@ async function main() {
 
   linkHover(document.querySelector("main"));
   setupSearch(cards);
+  setupDetails(features, teamsOf);
 
   // Les cartes n'existent qu'après le rendu : on rejoue l'ancre de l'URL.
-  if (location.hash) document.querySelector(location.hash)?.scrollIntoView();
+  if (location.hash && !location.hash.startsWith("#details-")) {
+    document.querySelector(location.hash)?.scrollIntoView();
+  }
 }
 
 main().catch((error) => {

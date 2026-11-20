@@ -47,7 +47,7 @@
       <div class="section__head">
         <h2 id="features-title" class="section__title">The features <img src="assets/gift.webp" alt="" aria-hidden="true" class="section__icon section__icon--gift"></h2>
       </div>
-      <p class="section__lead">Each team builds one feature of the Secret Santa app. Its tests and its card in the student guide describe what it must do.</p>
+      <p class="section__lead">Each team builds one feature of the Secret Santa app. Click a feature to see what to build, the steps and the hints.</p>
       <div id="feature-grid" class="grid grid--features"></div>
 
       <h3 class="section__subtitle">Extra features</h3>
@@ -63,6 +63,11 @@
     <span aria-hidden="true">×</span>
     <img src="assets/aws.webp" alt="powered by AWS" class="footer__logo footer__logo--aws">
   </footer>
+
+  <dialog id="details" class="details" aria-labelledby="details-title">
+    <button id="details-close" class="details__close" type="button" aria-label="Close">×</button>
+    <div id="details-body" class="details__body"></div>
+  </dialog>
 
   <noscript><p class="section">This page needs JavaScript to show the teams.</p></noscript>
 </body>

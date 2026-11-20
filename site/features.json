@@ -2,187 +2,783 @@
   {
     "number": 1,
     "title": "Event settings",
+    "slug": "01_event_settings",
     "goal": "Create a group, change its settings, and count the days left.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>create_group(db, name, kind, budget, deadline)</code>: return the new id. The name is stripped. <code>ValueError</code> for an empty name, a <code>kind</code> that is not <code>work</code>, <code>family</code> or <code>friends</code>, a negative budget, or a deadline that is not a real ISO date such as <code>2026-12-20</code>.</li>\n<li><code>update_group(db, group_id, name, budget, deadline)</code>: same validation.</li>\n<li><code>days_left(deadline, today=None)</code>: whole days until the deadline, negative if it has passed. <code>today</code> defaults to the real date.</li>\n<li><code>deadline_status(deadline, today=None)</code>: <code>\"late\"</code> if passed, <code>\"soon\"</code> if 7 days or less, otherwise <code>\"ok\"</code>.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A form to edit the selected group, a countdown metric with a warning when the deadline is soon or late, and a form to create a new group (after creating it, <code>st.rerun()</code> so the sidebar shows it).</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p><code>datetime.date.fromisoformat</code>, and subtracting two dates gives a <code>timedelta</code> with <code>.days</code>. Today is \"soon\", not \"late\".</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>A progress bar from the creation date to the deadline. Delete a group (with confirmation).</p>"
+      }
+    ]
   },
   {
     "number": 2,
     "title": "Participants",
+    "slug": "02_participants",
     "goal": "Add, list and remove the people of a group.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>add_participant(db, group_id, name, email)</code>: add the person and return the new id. Spaces around the name are removed and the email is lowercased. Raise <code>ValueError</code> for an empty name, an email without <code>@</code>, or an email already in this group (the same email is allowed in another group).</li>\n<li><code>list_participants(db, group_id)</code>: the people of this group only, sorted by name.</li>\n<li><code>delete_participant(db, participant_id)</code>: remove the person. Their group's draw becomes invalid, so it is cancelled too (delete the group's rows in <code>assignments</code>).</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A form (name, email), a counter of participants, the list with a delete button for each person.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p><code>str.strip()</code> and <code>str.lower()</code>. To refuse a duplicate, ask <code>exists(...)</code> first, then <code>insert(...)</code>. When someone is deleted, find their group with <code>find_one(...)</code> before deleting them. After a delete, <code>st.rerun()</code> refreshes the list. Use <code>st.form</code> so the page does not rerun on every keystroke.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Edit a participant. Search box. Ask for confirmation before deleting.</p>"
+      }
+    ]
   },
   {
     "number": 3,
     "title": "Wishlist",
+    "slug": "03_wishlist",
     "goal": "Each person manages the gifts they would like (table wishes).",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>add_wish(db, participant_id, title, price=None, url=\"\", priority=2)</code>: return the new id. <code>ValueError</code> if the title is empty, the price is negative, or the priority is not 1, 2 or 3. The price may be <code>None</code> (unknown).</li>\n<li><code>list_wishes(db, participant_id)</code>: most wanted first (priority 1 first), then by title.</li>\n<li><code>delete_wish(db, wish_id)</code>.</li>\n<li><code>wishlist_total(wishes)</code>: sum of the known prices; wishes without a price are skipped.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A form for the person chosen in \"I am\", their list with delete buttons, and a metric comparing the total to the group's budget.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p><code>find(..., order_by=[\"priority\", \"title\"])</code> sorts for you. <code>wishlist_total</code> receives the rows already loaded: no database inside, just a loop and an <code>if</code>.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Warn when the total is above the budget. Show the link as a clickable URL. Sort by price.</p>"
+      }
+    ]
   },
   {
     "number": 4,
     "title": "Gift catalogue",
+    "slug": "04_gift_catalogue",
     "goal": "Browse a list of gift ideas and keep favorites.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>CATALOGUE</code>: a list of at least 12 dictionaries with <strong>exactly</strong> the keys <code>name</code>, <code>category</code> and <code>price</code> (<code>{\"name\": ..., \"category\": ..., \"price\": ...}</code>), spread over several categories.</li>\n<li><code>categories(items)</code>: the categories, sorted, without duplicates.</li>\n<li><code>filter_items(items, category=None, max_price=None)</code>: keep one category (<code>None</code> = all) and items costing at most <code>max_price</code> (<code>None</code> = any price, the limit price is included).</li>\n<li><code>create_tables(db)</code>, <code>add_favorite(db, participant_id, item_name)</code> (adding twice does nothing), <code>list_favorites(db, participant_id)</code> (sorted names).</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A category select and a price slider, the matching items, a \"favorite\" button on each, and a bar chart of the number of items per category.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>A <code>set</code> removes duplicates. For favorites, check <code>exists(...)</code> before <code>insert(...)</code>, or create the table with <code>unique=[(\"participant_id\", \"item_name\")]</code> and use <code>insert(..., on_conflict=\"ignore\")</code>. <code>st.bar_chart</code> needs a table or a dictionary.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Add a favorite directly to the wishlist. Sort by price.</p>"
+      }
+    ]
   },
   {
     "number": 5,
     "title": "Greeting card",
+    "slug": "05_greeting_card",
     "goal": "Write a small card to go with the gift, in the right tone.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>TEMPLATES</code>: a dictionary tone → text with <code>{receiver}</code> and <code>{sender}</code> placeholders. Tones: <code>funny</code>, <code>warm</code>, <code>formal</code>.</li>\n<li><code>default_tone(kind)</code>: <code>work</code> → formal, <code>family</code> → warm, <code>friends</code> → funny (anything else → warm).</li>\n<li><code>render_card(tone, receiver, sender)</code>: the filled text. <code>ValueError</code> for an unknown tone or an empty name.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>The receiver is the person you give a gift to (read it from <code>assignments</code> for the current participant; if there is no draw, let the user type a name). A tone choice preselected from the group kind, the card in a nice frame, and a download button.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p><code>str.format(receiver=..., sender=...)</code>. If you display user text inside HTML, escape it with <code>html.escape</code> first. See <code>st.html</code> and <code>st.download_button</code>.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Save the cards in a table, and let the receiver read and delete the cards they got. Think about the signature: if the card carries the real name of the giver, the secret is gone. How would you sign it instead?</p>"
+      }
+    ]
   },
   {
     "number": 6,
     "title": "Christmas quiz",
+    "slug": "06_christmas_quiz",
     "goal": "Answer questions, get a score, compare with the group.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>QUESTIONS</code>: a list of dictionaries <code>{\"question\": ..., \"choices\": [...], \"answer\": ...}</code> (about 8). The answer must be one of the choices.</li>\n<li><code>score_answers(answers)</code>: number of right answers; <code>answers[i]</code> is the choice for <code>QUESTIONS[i]</code> (it may be <code>None</code> when unanswered).</li>\n<li><code>create_tables(db)</code>, <code>save_score(db, participant_id, score)</code> (<code>ValueError</code> if the score is below 0 or above the number of questions).</li>\n<li><code>leaderboard(db, group_id)</code>: one row <code>(name, best score)</code> per player of the group, best first, ties sorted by name.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A form with one <code>st.radio</code> per question (no default answer), a submit button, <code>st.balloons()</code> for a perfect score, and the leaderboard as a chart.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>Get the people of the group with <code>find</code>, then their scores with <code>find(..., {\"participant_id\": [list of ids]})</code>. Keep the best score of each person in a dictionary (<code>max(...)</code>), use <code>index_by</code> to get names, then <code>sorted(...)</code>.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>A donut chart (right / wrong) for the last attempt. Shuffle the questions. A timer.</p>"
+      }
+    ]
   },
   {
     "number": 7,
     "title": "Gift progress",
+    "slug": "07_gift_progress",
     "goal": "Each giver tracks where their gift is: idea, bought, wrapped, given.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>STATUSES = [\"idea\", \"bought\", \"wrapped\", \"given\"]</code>.</li>\n<li><code>create_tables(db)</code>, <code>set_status(db, giver_id, status)</code> (<code>ValueError</code> for an unknown status; replaces the previous one), <code>get_status(db, giver_id)</code> (<code>\"idea\"</code> if nothing saved).</li>\n<li><code>group_progress(db, group_id)</code>: how many givers of the group's draw are in each status, as a dictionary that contains <strong>every</strong> status, with 0 when nobody is in it. No names: the secret stays safe.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>Only for a person who has a receiver: a select to change the status and a progress bar. Under it, a bar chart of the whole group.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p><code>insert(..., on_conflict=\"replace\")</code> keeps one row per giver (make the giver the primary key of your table). <strong>Trap:</strong> if the select's <code>index</code> depends on the saved value, Streamlit treats it as a new widget after each save and you must click twice. Give the widget a fixed <code>key</code> and save with <code>on_change</code>.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Show the date of the last change. Remind the giver when the deadline is close.</p>"
+      }
+    ]
   },
   {
     "number": 8,
     "title": "Group stats",
+    "slug": "08_group_stats",
     "goal": "Numbers and charts about the wishes of a group (read only).",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>wishes_per_person(db, group_id)</code>: <code>(name, number of wishes)</code> for <strong>everyone</strong>, including people with 0.</li>\n<li><code>prices(db, group_id)</code>: the known prices of all wishes of the group.</li>\n<li><code>price_buckets(prices)</code>: counts in the ranges <code>\"0-10\"</code>, <code>\"10-20\"</code>, <code>\"20-50\"</code>, <code>\"50+\"</code>. A price of 10 goes in <code>\"10-20\"</code> (lower bound included).</li>\n<li><code>average_price(prices)</code>: <code>0</code> when there is no price.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A few <code>st.metric</code>, a bar chart of wishes per person, and a bar chart of the price ranges.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>Loop over <strong>all the people</strong> of the group and call <code>count(db, \"wishes\", {\"participant_id\": person[\"id\"]})</code> for each: someone with 0 wishes is simply counted as 0, nobody is forgotten. For the prices, ask <code>find</code> with <code>{\"participant_id\": [list of ids]}</code> and skip the <code>None</code> prices.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Most wished-for items. Compare with the other groups.</p>"
+      }
+    ]
   },
   {
     "number": 9,
     "title": "Basic draw",
+    "slug": "09_basic_draw",
     "goal": "Decide who gives a gift to whom: everybody gives once, receives once, and never to themself.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>make_draw(participant_ids, rng=random)</code>: a dictionary <code>giver_id → receiver_id</code>. <code>ValueError</code> if there are fewer than 2 people. With two people the only possible draw is <code>{1: 2, 2: 1}</code>. Use <code>rng</code> (not <code>random</code> directly) for every random choice: the tests pass <code>random.Random(seed)</code> so that the result can be predicted.</li>\n<li><code>save_draw(db, group_id, pairs)</code>: store the dictionary in the shared <code>assignments</code> table, replacing the previous draw of the group.</li>\n<li><code>load_draw(db, group_id)</code>: read it back as a dictionary (<code>{}</code> if no draw).</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A \"Draw\" button. If a draw already exists, ask for a confirmation (a checkbox) before replacing it. <code>st.snow()</code> after a draw. The full list of pairs only inside <code>st.expander(\"Organizer view\")</code>.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>Shuffle a copy of the list and check that nobody is in front of their own id; start again if not. Why is starting again fair? <a href=\"#details-19\">Feature 19</a> explores exactly that question.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Refuse the draw when a group has fewer than 3 people. Keep a history of previous draws.</p>"
+      }
+    ]
   },
   {
     "number": 10,
     "title": "Exclusion rules",
+    "slug": "10_exclusion_rules",
     "goal": "Some pairs (couples, roommates) must not draw each other, in either direction.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>create_tables(db)</code> and your own table for the rules.</li>\n<li><code>add_exclusion(db, group_id, person_a, person_b, reason=\"\")</code>: return the new id. <code>ValueError</code> for the same person twice, or for a rule that already exists (<code>a, b</code> and <code>b, a</code> are the same rule).</li>\n<li><code>list_exclusions(db, group_id)</code>: rows with the keys <code>name_a</code>, <code>name_b</code> and <code>reason</code> (plus what you need).</li>\n<li><code>delete_exclusion(db, exclusion_id)</code>.</li>\n<li><code>is_allowed(giver, receiver, exclusions)</code>: <code>exclusions</code> is a <strong>set of frozensets</strong>, for example <code>{frozenset((1, 2))}</code>. A person is never allowed to give to themself.</li>\n<li><code>draw_with_exclusions(participant_ids, exclusions, rng=random, tries=1000)</code>: a dictionary giver → receiver that respects every rule, or <code>None</code> if no valid draw is found (or fewer than 2 people).</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A form with two selects, the list of rules with a delete button, a graph of the forbidden pairs with <code>st.graphviz_chart</code>, and a button that draws with the rules and saves it into <code>assignments</code>. A warning when no draw is possible.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>A <code>frozenset</code> is a set that can itself be put in a set, and <code>frozenset((1, 2)) == frozenset((2, 1))</code>. For the draw, try random shuffles up to <code>tries</code> times.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Detect an impossible situation before trying (two people who can only draw each other). Explain which rule is the problem.</p>"
+      }
+    ]
   },
   {
     "number": 11,
     "title": "Reveal with a PIN",
+    "slug": "11_reveal",
     "goal": "Each person chooses a 4-digit PIN, then uses it to discover who they give a gift to, once the draw is done.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>create_tables(db)</code>, <code>hash_pin(pin)</code>: a text that is not the PIN, always the same for the same PIN, different for different PINs. Use <code>hashlib.sha256</code>. The PIN itself is never stored.</li>\n<li><code>set_pin(db, participant_id, pin)</code>: exactly 4 digits, otherwise <code>ValueError</code> (<code>\"123\"</code>, <code>\"12345\"</code>, <code>\"abcd\"</code>, <code>\"\"</code> and <code>\"12 4\"</code> are all refused). Replaces the previous PIN.</li>\n<li><code>check_pin(db, participant_id, pin)</code>: true or false; false if the person has no PIN.</li>\n<li><code>reveal(db, participant_id, pin)</code>: the <strong>name</strong> of the receiver, or <code>None</code> when the PIN is wrong or there is no draw. It records that the person has revealed.</li>\n<li><code>has_revealed(db, participant_id)</code>. (You will probably also want <code>has_pin(db, participant_id)</code> for the page.)</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>If the person has no PIN, ask them to choose one. Otherwise ask for it and show the receiver in big letters with <code>st.snow()</code>. Show a short note that this is a learning exercise, not real security.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p><code>str.isdigit()</code> and <code>len</code>. <code>hashlib.sha256(text.encode()).hexdigest()</code>.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Block the reveal after 3 wrong PINs. Show when the person revealed.</p>"
+      }
+    ]
   },
   {
     "number": 12,
     "title": "Import and export CSV",
+    "slug": "12_import_export",
     "goal": "Load participants from a spreadsheet file and export results.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>parse_participants_csv(text)</code>: returns <code>(rows, errors)</code>. The first line must be the header <code>name,email</code>. Each valid row becomes <code>{\"name\": ..., \"email\": ...}</code> with the name stripped and the email lowercased. Each invalid row (empty name, email without <code>@</code>) is skipped and adds a message that starts with <code>Line N</code> (the header is line 1, so the first data row is line 2). A missing header or an empty text returns no rows and one error.</li>\n<li><code>import_rows(db, group_id, rows)</code>: add the people, skipping the emails already in the group. Return how many were imported.</li>\n<li><code>export_participants_csv(db, group_id)</code>: CSV text with the header <code>name,email</code>, readable again by your parser.</li>\n<li><code>export_draw_csv(db, group_id)</code>: CSV text with the header <code>giver,receiver</code>, one line per pair. Without draw, only the header line, followed by a newline.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p><code>st.file_uploader</code>, a preview with <code>st.dataframe</code>, the list of errors, an import button, and download buttons. The draw export goes in the organizer expander.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>The <code>csv</code> module (<code>DictReader</code>, <code>writer</code>) and <code>io.StringIO</code> do the hard work. Test your parser with a file that contains mistakes on purpose.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Accept <code>;</code> as a separator (Excel in France). Import wishes too.</p>"
+      }
+    ]
   },
   {
     "number": 13,
     "title": "Budget tracker",
+    "slug": "13_budget_tracker",
     "goal": "Each giver notes what they spend and compares it to the group budget, without revealing who gives to whom.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>create_tables(db)</code> and your own table for the expenses.</li>\n<li><code>add_expense(db, giver_id, label, amount, today=None)</code>: return the new id. The label is stripped and required, the amount must be above 0. The date of the expense is <code>today</code> (default: the real date) stored as <code>2026-12-01</code>.</li>\n<li><code>list_expenses(db, giver_id)</code>: oldest first, rows with <code>label</code>, <code>amount</code>, <code>spent_on</code>.</li>\n<li><code>group_expenses(db, group_id)</code>: all expenses of the group, sorted by date, rows with <code>spent_on</code> and <code>amount</code>.</li>\n<li><code>spent_by_giver(db, group_id)</code>: a list of <code>(name, total)</code> for <strong>everyone</strong> in the group, including <code>0</code>, sorted by name.</li>\n<li><code>budget_status(total, budget)</code>: <code>\"ok\"</code>, <code>\"warning\"</code> from 90% of the budget up to and including 100%, <code>\"over\"</code> above the budget.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A form for the current person, a metric of their total with <code>st.progress</code>, a bar chart of the spending of the group with a line at the budget, and a cumulative line chart over time.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>For each person of the group, <code>sum(...)</code> of the amounts of their expenses (the sum of an empty list is 0, so people who spent nothing are kept). For the cumulative chart, <code>itertools.accumulate</code> or pandas <code>cumsum()</code>. Altair can add a rule line with <code>mark_rule</code>.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Delete an expense. Show how much is left.</p>"
+      }
+    ]
   },
   {
     "number": 14,
     "title": "Reminders",
+    "slug": "14_reminders",
     "goal": "Remind people with an empty wishlist, 7 days and 1 day before the deadline. The \"emails\" are stored in a table (nothing is really sent).",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>REMINDER_DAYS = {7: \"J-7\", 1: \"J-1\"}</code> and <code>create_tables(db)</code> (your own table: the outbox).</li>\n<li><code>people_to_remind(db, group_id, today=None)</code>: the people with no wish at all, but <strong>only if exactly 7 or exactly 1 day is left</strong>; otherwise an empty list.</li>\n<li><code>build_reminder(name, group_name, days_left)</code>: the text. It contains the name, the group name and <code>7 days</code>; for one day it says <code>1 day</code> (singular).</li>\n<li><code>send_reminders(db, group_id, today=None)</code>: store one fake email per person to remind and return the count. The same kind of reminder is never sent twice to the same person, but J-1 can follow J-7.</li>\n<li><code>list_outbox(db, group_id)</code>: the stored emails, with a <code>kind</code> key (<code>J-7</code> or <code>J-1</code>).</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A date input \"Today\" that lets you test without waiting, the number of days left, a send button, the outbox in a table, and a timeline of the deadlines of all groups with a vertical line for today.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p><code>create_table(..., unique=[(\"participant_id\", \"kind\")])</code> plus <code>insert(..., on_conflict=\"ignore\")</code> prevents duplicates, and <code>insert</code> returns <code>None</code> when the row was not added: count only the others. The deadlines of the demo groups are fixed on the day the database is created, so use the \"Today\" input to travel to day J-7.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Send a real email (ask a mentor: it needs a test mail server, never use real addresses). Explain on the page why nobody was reminded.</p>"
+      }
+    ]
   },
   {
     "number": 15,
     "title": "Santa sheet",
+    "slug": "15_santa_sheet",
     "goal": "A printable page for each giver: who they give to, the wishes, the budget and the deadline.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>build_sheet_html(giver, receiver, wishes, budget, deadline)</code>: a complete HTML page as text. It starts with <code>&lt;!DOCTYPE html&gt;</code>, contains <code>&lt;meta charset=\"utf-8\"&gt;</code> (so accents work), the two names, each wish title with its price formatted like <code>12.00 €</code>, the budget like <code>20.00 €</code> and the deadline. Every value is <strong>escaped</strong> (<code>&lt;script&gt;</code> must come out as <code>&amp;lt;script&amp;gt;</code>, <code>A &amp; B</code> as <code>A &amp;amp; B</code>). <code>wishes</code> is a list of dictionaries <code>{\"title\": ..., \"price\": ...}</code>; a price may be <code>None</code>. Without wishes the page says <code>No wish yet</code>.</li>\n<li><code>sheet_data(db, giver_id)</code>: a dictionary with exactly the keys <code>giver</code>, <code>receiver</code> (names), <code>wishes</code> (the receiver's wishes), <code>budget</code> and <code>deadline</code>, or <code>None</code> if there is no draw.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A preview with <code>st.html</code> for the current person and a download button for the <code>.html</code> file. In the organizer expander, one download per participant.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p><code>html.escape</code>. An f-string for the page, and a <code>for</code> loop for the wishes.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>A nicer layout with CSS, a print stylesheet (<code>@media print</code>).</p>"
+      }
+    ]
   },
   {
     "number": 16,
     "title": "Guess your Santa",
+    "slug": "16_guess_santa",
     "goal": "Everyone guesses who their Santa is, and the page tells who was right.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>create_tables(db)</code> and your own table for the guesses (one guess per person).</li>\n<li><code>save_guess(db, participant_id, guessed_id)</code>: <code>ValueError</code> if you guess yourself. A new guess replaces the previous one.</li>\n<li><code>guess_results(db, group_id)</code>: one dictionary per guess, with <code>name</code>, <code>guessed</code> (names), <code>santa</code> (the real Santa's name, or <code>None</code> if there is no draw) and <code>correct</code> (<code>True</code> or <code>False</code>, never <code>None</code>).</li>\n<li><code>score(results)</code>: the number of correct guesses (0 for an empty list).</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A select with the other people, and the results only after the user ticks \"Reveal results\". Show the score and a donut chart (right / wrong). The detailed table, which gives the whole draw away, goes in the organizer expander.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p><code>find_one(db, \"assignments\", {\"group_id\": ..., \"receiver_id\": &lt;the person who guesses&gt;})</code> gives the pair, and its <code>giver_id</code> is the real Santa; <code>index_by</code> turns ids into names. A person who has not been drawn has no pair: handle <code>None</code>. Altair's <code>mark_arc</code> draws a donut.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>A leaderboard of the best detectives across the quiz.</p>"
+      }
+    ]
   },
   {
     "number": 17,
     "title": "Chain draw",
+    "slug": "17_chain_draw",
     "goal": "One single loop A → B → C → ... → A. Never two small loops (A ↔ B and C ↔ D).",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>make_chain(participant_ids, rng=random)</code>: a dictionary giver → receiver forming one loop that visits everybody. <code>ValueError</code> below 2 people.</li>\n<li><code>is_single_chain(pairs)</code>: <code>True</code> if, starting from anybody and following giver → receiver, you visit every person exactly once before coming back to the start. <code>{1: 2, 2: 1, 3: 4, 4: 3}</code> is <strong>not</strong> a single chain.</li>\n<li><code>chain_with_exclusions(participant_ids, exclusions, rng=random)</code>: a single chain where no pair of the <code>exclusions</code> (a set of frozensets, as in <a href=\"#details-10\">feature 10</a>) is used, or <code>None</code> when impossible. Hint: <strong>backtracking</strong>.</li>\n<li><code>chain_to_dot(pairs, names)</code>: a Graphviz text that draws the chain as a circle. It must contain <code>circo</code> and one arrow per pair like <code>\"Alice\" -&gt; \"Bob\"</code>. <code>names</code> maps an id to a name.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A button that draws and saves into <code>assignments</code>. The graph (<code>st.graphviz_chart</code>) only in the organizer expander.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>Shuffle the list, then give each person to the next one, and the last one to the first. For <code>is_single_chain</code>, walk through the pairs counting the steps. For backtracking: build the chain person by person; when the next person is forbidden, try another one; if nobody fits, go back one step and change the previous choice. Write the recursion on paper first.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Show the chain in the page as \"A → B → C → A\" text. Count how many chains exist for 5 people.</p>"
+      }
+    ]
   },
   {
     "number": 18,
     "title": "Weighted draw",
+    "slug": "18_weighted_draw",
     "goal": "Each Santa rates how well they know the others (0 to 3), and the draw gives them, as much as possible, someone they know well.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>create_tables(db)</code> and your own table for the ratings.</li>\n<li><code>set_affinity(db, giver_id, receiver_id, score)</code>: <code>ValueError</code> if the score is outside 0 to 3 or if giver and receiver are the same person. A new score replaces the old one.</li>\n<li><code>get_affinities(db, group_id)</code>: a dictionary <code>(giver, receiver) → score</code> with an entry for <strong>every ordered pair</strong> of two different people of the group (4 people give 12 entries), <code>0</code> when not rated.</li>\n<li><code>total_score(pairs, scores)</code>: the sum of the scores of the pairs of a draw.</li>\n<li><code>greedy_draw(participant_ids, scores)</code>: each giver, in the order of the list, takes the free receiver with the best score. The result must always be a valid draw, even in the corner case where the last giver would be left with only themself (then swap with another giver). <code>scores</code> is a dictionary; a missing pair counts for 0.</li>\n<li><code>best_draw(participant_ids, scores)</code>: try every possible draw and keep the best total. <code>ValueError</code> above 8 people (too slow).</li>\n<li><code>random_score(participant_ids, scores, rng=random, runs=200)</code>: the average total score of plain random draws (0 when there is no score).</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>The current person rates the others with sliders. A heatmap of all ratings (organizer expander). A bar chart that compares the total score of a random draw, of the greedy draw and of the best draw. A button that saves the greedy draw in <code>assignments</code>.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p><code>itertools.permutations</code> lists all the orders of a list. A draw where nobody gives to themself is a permutation with no fixed point. Is greedy always the best? Find a counterexample with 3 people, then check that your <code>best_draw</code> finds a better result.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Let the group see the average satisfaction without names.</p>"
+      }
+    ]
   },
   {
     "number": 19,
     "title": "Fair draw",
+    "slug": "19_fair_draw",
     "goal": "Prove with numbers and charts that shuffling and starting again is fair, and that a \"natural\" method is not.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li>A draw is a tuple of receivers: <code>draw[i]</code> is the receiver of <code>ids[i]</code>.</li>\n<li><code>all_derangements(ids)</code>: the list of all possible draws where nobody gives to themself (4 people give 9).</li>\n<li><code>random_derangement(ids, rng=random)</code>: shuffle everybody, start again if someone got themself.</li>\n<li><code>biased_derangement(ids, rng=random)</code>: the naive method. Each giver in turn picks randomly among the receivers still free (not themself). If the last giver is left with themself, start again.</li>\n<li><code>simulate(draw_function, ids, runs, rng=random)</code>: run the draw <code>runs</code> times, return a <code>collections.Counter</code> of how many times each draw came out.</li>\n<li><code>naive_probabilities(ids)</code>: the <strong>exact</strong> chance of each draw with the naive method, by maths and not by simulation. Together they add up to 1.</li>\n<li><code>uniformity_score(counter, draws)</code>: the chi-square statistic divided by the number of possible draws minus 1. It is about 1 when luck alone explains the counts, much bigger when a draw is favoured. <code>ValueError</code> with fewer than 2 possible draws.</li>\n<li><code>pair_frequencies(counter, ids)</code>: <code>(giver, receiver) → share of the draws</code> where this giver gives to this receiver.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A slider for the number of draws, the uniformity score of both methods, one chart with all the possible draws and both methods, and two heatmaps giver × receiver.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>For <code>naive_probabilities</code>: the chance of a draw is the product, over the givers, of 1 / (number of choices the giver had). Then divide by the total so that the runs that start again are taken into account. Chi-square: the sum over all possible draws of <code>(observed - expected)² / expected</code>, where <code>expected = runs / number of possible draws</code>. Do not forget the draws that never came out: they count with an observed value of 0.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Find another naive method that is even more biased. Explain in two sentences why the naive method favours some draws.</p>"
+      }
+    ]
   },
   {
     "number": 20,
     "title": "Secret messages",
+    "slug": "20_secret_messages",
     "goal": "An anonymous conversation between a Santa and the person they give to.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>create_tables(db)</code> and your own table for the messages.</li>\n<li><code>santa_pseudonym(giver_id)</code>: a funny name (elf names in a list of your choice) that depends only on the id: always the same for the same Santa, different for different ids.</li>\n<li><code>my_receiver(db, group_id, participant_id)</code> and <code>my_santa(db, group_id, participant_id)</code>: the id of the person I give to / the person who gives to me, or <code>None</code> when there is no draw.</li>\n<li><code>send_message(db, group_id, sender_id, recipient_id, body)</code>: allowed <strong>only</strong> between a Santa and their receiver, in both directions. <code>ValueError</code> for anybody else, without draw, for an empty message, or for more than 500 characters.</li>\n<li><code>conversation(db, group_id, a, b)</code>: the messages between the two people (both directions), oldest first, with a <code>body</code> key. Messages with other people never appear.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>Two tabs: \"To my receiver\" (I write under my pseudonym) and \"From my Santa\" (my Santa appears only under their pseudonym, never with their real name). Use <code>st.chat_message</code> and <code>st.chat_input</code>.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>The modulo operator <code>%</code> gives a stable choice from a list. A message is allowed if <code>(sender, recipient)</code> or <code>(recipient, sender)</code> is a pair of <code>assignments</code>.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Refresh the conversation every few seconds. Read the verdict of <a href=\"#details-21\">feature 21</a> before sending (what would you need to share code between features?).</p>"
+      }
+    ]
   },
   {
     "number": 21,
     "title": "Spoiler check",
+    "slug": "21_spoiler_check",
     "goal": "Before sending a message, check whether it gives away who you are, with simple rules (no AI).",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>check_message(text, santa_name)</code>: returns <code>(verdict, reasons)</code>.</li>\n<li><code>\"block\"</code> if the message contains the Santa's name as a whole word, ignoring case and accents (<code>CHLOE</code> matches <code>Chloé</code>, but <code>malice</code> does not match <code>Alice</code>), or an email address.</li>\n<li><code>\"warn\"</code> for signature phrases (<code>it's me</code>, <code>signed</code>, <code>from your</code>, <code>love,</code>, <code>xoxo</code>, in any case) or an initial like <code>- A.</code>.</li>\n<li><code>\"send\"</code> with an empty list of reasons otherwise.</li>\n<li>When there is a block, the verdict is <code>\"block\"</code>, and the reasons keep <strong>all</strong> the problems found, warnings included.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A text area, the Santa's name (default: the current participant), a colored result (<code>st.success</code>, <code>st.warning</code>, <code>st.error</code>) and the list of reasons.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p><code>unicodedata.normalize(\"NFKD\", text)</code> splits <code>é</code> into <code>e</code> plus an accent, which you can then remove. <code>re.search</code> with <code>\\b</code> matches whole words. <code>re.escape</code> protects special characters of a name. Write the regular expression for the email on a small separate test first.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Think about what your rules miss (\"a friend who works near you\"). Which rule would catch it, and what false alarms would it create?</p>"
+      }
+    ]
   },
   {
     "number": 22,
     "title": "My dashboard",
+    "slug": "22_my_dashboard",
     "goal": "One person (same email) can be in several groups. Show all of them on one page.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>my_groups(db, email, today=None)</code>: one dictionary per group where this email is a participant, sorted by deadline (closest first), with the keys <code>group</code> (the name), <code>kind</code>, <code>deadline</code>, <code>days_left</code>, <code>receiver</code> (the name of the person I give to, or <code>None</code> without draw) and <code>wishes</code> (how many wishes I have in this group).</li>\n<li><code>next_deadline(rows)</code>: the first row whose deadline is today or later, or <code>None</code>.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>The email of the current participant, a card per group with its icon (<code>database.KINDS</code>), metrics, and a timeline of the deadlines with a line for today.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>The email is the link between participants of different groups: <code>find(db, \"participants\", {\"email\": email})</code> gives one row per group. For each row, look up the group, the draw and the wishes with <code>find_one</code> and <code>count</code>. A loop is fine: simple and slow is better than clever and wrong. Clean the email first (<code>strip</code>, <code>lower</code>).</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Highlight the closest deadline. Warn about groups where my wishlist is empty.</p>"
+      }
+    ]
   },
   {
     "number": 23,
     "title": "Admin dashboard",
+    "slug": "23_admin_dashboard",
     "goal": "The health of every group at a glance.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>groups_health(db, today=None)</code>: one dictionary per group, closest deadline first, with the keys <code>id</code>, <code>name</code>, <code>kind</code>, <code>participants</code> (count), <code>empty_wishlists</code> (people with no wish; someone with two wishes counts as one filled wishlist), <code>drawn</code> (<code>True</code> or <code>False</code>) and <code>days_left</code>. A group with nobody gives <code>0, 0, False</code>.</li>\n<li><code>health_label(row)</code>: <code>row</code> is a dictionary with at least <code>drawn</code>, <code>empty_wishlists</code> and <code>days_left</code>. Returns <code>\"ready\"</code> (drawn and no empty wishlist, even one day before the deadline), <code>\"urgent\"</code> (not ready, and 7 days or less left or the deadline passed), <code>\"attention\"</code> otherwise.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>Metrics for the whole app, a table (<code>st.dataframe</code>) with a colored label, and a stacked bar chart per group (filled / empty wishlists).</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p><code>find(db, \"groups\", order_by=\"deadline\")</code>, then for each group: <code>find</code> its participants, count those with no wish (<code>exists</code>), and ask <code>exists</code> on <code>assignments</code> to know whether a draw was made. Build one dictionary per group.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Sort by urgency. An \"export to CSV\" button.</p>"
+      }
+    ]
   },
   {
     "number": 24,
     "title": "Time machine",
+    "slug": "24_time_machine",
     "goal": "Record every change of the participants and wishes in a history, then replay it with a slider.",
-    "extra": false
+    "extra": false,
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>create_tables(db)</code>: creates your log table <strong>and SQLite triggers</strong> (see <code>CREATE TRIGGER</code> in the SQLite documentation) that write into the log whenever a row of <code>participants</code> or <code>wishes</code> is inserted or deleted.</li>\n<li><code>history(db, group_id)</code>: the events of the group in the order they happened, with the keys <code>table_name</code> (<code>\"participants\"</code> or <code>\"wishes\"</code>), <code>action</code> (<code>\"insert\"</code> or <code>\"delete\"</code>) and your data.</li>\n<li><code>replay(events, step)</code>: apply the first <code>step</code> events and return <code>{\"participants\": [names], \"wishes\": [titles]}</code>. With <code>step=0</code>, both lists are empty.</li>\n</ul>\n<p>The triggers <strong>must never make an insert or a delete fail</strong>, and the tests check hard cases: deleting a participant who has wishes, and deleting a whole group (wishes and participants disappear automatically).</p>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A slider over the steps, the state of the group at that step, and a chart of the number of events over time. Explain on the page that only changes made after the first visit are recorded.</p>"
+      },
+      {
+        "title": "Good to know",
+        "html": "<p><strong>This is the one feature that needs real SQL</strong> (a trigger is a rule written inside the database). Ask a mentor for a 15-minute introduction, and read <a href=\"https://www.sqlite.org/lang_createtrigger.html\"><code>CREATE TRIGGER</code></a>. You write the trigger with <code>db.execute(...)</code>; reading the log back works with <code>find</code>. <code>json_object('id', NEW.id, 'name', NEW.name)</code> builds JSON inside SQL. <code>NEW</code> and <code>OLD</code> are the row inserted / deleted. Think about the order of events when deleting a participant with wishes, and about the moment at which you can still find the group of a wish.</p>\n<p><strong>Be careful:</strong> the triggers stay in the database file once created, and then record the changes made by every other page. If something strange happens in another feature, delete <code>app/data/app.db</code> and start again.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Record who made the change. A \"restore this state\" button (discuss the risks with your mentor first).</p>"
+      }
+    ]
   },
   {
     "number": 25,
     "title": "Draw history",
+    "slug": "25_draw_history",
     "goal": "Keep the draw of each year and draw again without giving the same person to the same Santa.",
-    "extra": true
+    "extra": true,
+    "needs": "none",
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>create_tables(db)</code> and your own tables (a saved draw with a label, and its pairs).</li>\n<li><code>save_snapshot(db, group_id, label, today=None)</code>: store the current draw (table <code>assignments</code>) under a label such as <code>\"2025\"</code>, and return its id. <code>ValueError</code> for an empty label, a label already saved in this group, or when there is no draw. <code>today</code> is the saving date.</li>\n<li><code>list_snapshots(db, group_id)</code> (most recent first), <code>delete_snapshot(db, snapshot_id)</code>.</li>\n<li><code>snapshot_pairs(db, snapshot_id)</code>: the saved draw as a dictionary giver → receiver.</li>\n<li><code>past_pairs(db, group_id, last=None)</code>: the <strong>set</strong> of <code>(giver, receiver)</code> of all saved draws, or only of the <code>last</code> most recent ones.</li>\n<li><code>save_draw(db, group_id, pairs)</code>: replace the draw of the group in <code>assignments</code>.</li>\n<li><code>draw_avoiding(participant_ids, forbidden, rng=random)</code>: a dictionary giver → receiver where nobody draws themself and no pair of <code>forbidden</code> (a set of <code>(giver, receiver)</code>) is used, or <code>None</code> if impossible (also under 2 people). When a solution exists, it must be found: the tests include a case with a single solution.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A form to save the current draw, the list of saved draws (with a table and a delete button), and a \"Draw\" button with a confirmation that avoids the last N saved draws.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>Random shuffles can miss a rare solution. Think of the draw as matching each giver with a free receiver: when a receiver is already taken, ask the giver who has it to look for another one (a recursive \"try to move\" function).</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Also respect the rules of <a href=\"#details-10\">feature 10</a>. Show which pairs repeated when a draw is impossible.</p>"
+      }
+    ]
   },
   {
     "number": 26,
     "title": "ICS calendar",
+    "slug": "26_ics_calendar",
     "goal": "Download the dates of a group as an .ics file, to add them to any calendar.",
-    "extra": true
+    "extra": true,
+    "needs": "none",
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>group_events(group, party_day=None)</code>: a list of events. <code>group</code> is a dictionary with <code>id</code>, <code>name</code>, <code>deadline</code> (text <code>2026-12-20</code>) and <code>budget</code>. An event is a dictionary with <code>uid</code>, <code>summary</code>, <code>day</code> (a <code>date</code>), <code>description</code> and <code>alarms</code> (days before the event). The deadline gives one event with alarms at 7 and 1 days; a <code>party_day</code> adds a second event.</li>\n<li><code>escape(text)</code>: escape <code>\\</code>, <code>;</code>, <code>,</code> and new lines as the ICS format requires (<code>,</code> becomes <code>\\,</code>).</li>\n<li><code>fold(line)</code>: cut a line into pieces of <strong>at most 75 bytes</strong> (UTF-8, so <code>é</code> counts for 2), each next piece starting with a space, joined with <code>\\r\\n</code>.</li>\n<li><code>build_ics(events, now=None)</code>: the text of the file, with <code>\\r\\n</code> line endings, from <code>BEGIN:VCALENDAR</code> to <code>END:VCALENDAR</code>. Each event is an all-day event (<code>DTSTART;VALUE=DATE:20261220</code>, and <code>DTEND</code> is the <strong>next day</strong>), has a <code>DTSTAMP</code> built from <code>now</code> (UTC, like <code>20261101T100000Z</code>) and a <code>VALARM</code> with <code>TRIGGER:-P7D</code> for each alarm.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>The events, an optional party date, and <code>st.download_button</code> with the mime type <code>text/calendar</code>.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>Read the format in <a href=\"https://datatracker.ietf.org/doc/html/rfc5545\">RFC 5545</a> (sections 3.1 and 3.3.11 are enough), or open an <code>.ics</code> file exported from your own calendar. <code>date.strftime(\"%Y%m%d\")</code> or an f-string with <code>{day:%Y%m%d}</code>.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Add the deadlines of all the groups of one email (see <a href=\"#details-22\">feature 22</a>). Import your file in a calendar and look at the reminders.</p>"
+      }
+    ]
   },
   {
     "number": 27,
     "title": "Teams",
+    "slug": "27_teams",
     "goal": "Put the people of a group in teams: a couple, the children, a household.",
-    "extra": true
+    "extra": true,
+    "needs": "none",
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>create_tables(db)</code> and your own tables. A person is in <strong>one team at most</strong>.</li>\n<li><code>create_team(db, group_id, name)</code>: return the id. The name is stripped. <code>ValueError</code> for an empty name or a name already used in this group.</li>\n<li><code>add_member(db, team_id, participant_id)</code>: put the person in the team. If they were in another team, they <strong>move</strong>. <code>ValueError</code> if the person is not in the group of the team.</li>\n<li><code>remove_member(db, participant_id)</code>, <code>delete_team(db, team_id)</code> (the members stay in the group, without team).</li>\n<li><code>list_teams(db, group_id)</code>: a list of <code>{\"id\", \"name\", \"members\": [participant ids]}</code>, sorted by team name.</li>\n<li><code>team_of(db, group_id)</code>: a dictionary <code>{participant id: team id}</code> (only people who have a team).</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A form to create a team, and for each team its members, a select to add someone, buttons to remove a member or delete the team.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>If the participant id is the primary key of your members table, <code>insert(..., on_conflict=\"replace\")</code> moves a person for you. Deleting a person or a team must not leave members behind: <code>ON DELETE CASCADE</code>.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>A role per team (\"parents\", \"children\"). Warn about people without a team.</p>"
+      }
+    ]
   },
   {
     "number": 28,
     "title": "Group gifts",
+    "slug": "28_group_gifts",
     "goal": "The core draw gives one receiver to each giver. A group gift has several givers and several receivers: the children together for both parents, each parent for each child... The shared table assignments is not touched.",
-    "extra": true
+    "extra": true,
+    "needs": "none (<a href=\"#details-27\">27</a> is optional on the page)",
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>create_tables(db)</code> and your own tables (gifts, givers, receivers). A gift has a <code>source</code> text (<code>\"manual\"</code> by default).</li>\n<li><code>create_gift(db, group_id, label, giver_ids, receiver_ids, source=\"manual\")</code>: return the id. The label is stripped and a person given twice counts once. <code>ValueError</code> for an empty label, no giver or no receiver, someone who is both giver and receiver of the same gift, or someone outside the group.</li>\n<li><code>create_each_to_each(db, group_id, giver_ids, receiver_ids)</code>: one gift per (giver, receiver), labelled <code>\"Alice → Bob\"</code>, skipping a person giving to themself. Return the ids. <code>ValueError</code> if there is nothing to create.</li>\n<li><code>list_gifts(db, group_id)</code>: a list of <code>{\"id\", \"label\", \"source\", \"givers\": [ids], \"receivers\": [ids]}</code> (ids sorted). A gift left without giver or without receiver (people deleted) is not listed.</li>\n<li><code>gifts_to_give(db, group_id, participant_id)</code>: the gifts where this person is a giver. A receiver never sees a gift for them.</li>\n<li><code>delete_gift(db, gift_id)</code>, <code>delete_by_source(db, group_id, source)</code>.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>\"Gifts I give\" for the current person (with the co-givers). The creation form and the full list only in <code>st.expander(\"Organizer view\")</code>. If <a href=\"#details-27\">feature 27</a> exists, offer whole teams as a shortcut to choose givers or receivers.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>One table for the gifts and one table for each side keeps the model simple: <code>(gift_id, participant_id)</code>. Check the people <strong>before</strong> inserting anything, so a refused gift leaves no half-created rows.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Warn when someone gives a lot more gifts than the others. Show \"who gives what\" as a graph.</p>"
+      }
+    ]
   },
   {
     "number": 29,
     "title": "Unit draw",
+    "slug": "29_unit_draw",
     "goal": "A draw where teams count, like exclusion rules but for whole teams. Needs 25 and 28 for the logic, and 27 for the page (the teams).",
-    "extra": true
+    "extra": true,
+    "needs": "<a href=\"#details-25\">25</a> and <a href=\"#details-28\">28</a> (<a href=\"#details-27\">27</a> for the page)",
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>forbidden_pairs(participant_ids, team_of, mode)</code>: the set of <code>(giver, receiver)</code> a mode forbids. <code>team_of</code> is <code>{participant id: team id}</code>. Mode <code>\"across\"</code>: nobody draws someone of <strong>their own team</strong> (people without a team have no restriction). Mode <code>\"within\"</code>: people only draw someone of their own team (people without a team stay together). <code>ValueError</code> for another mode.</li>\n<li><code>draw_people(participant_ids, team_of, mode, past=(), rng=random)</code>: a draw giver → receiver that follows the mode and avoids the pairs of <code>past</code>, or <code>None</code>. Reuse <code>draw_avoiding</code> of <a href=\"#details-25\">feature 25</a>.</li>\n<li><code>make_units(participant_ids, team_of)</code>: the list of units: one list of ids per team, and one for each person without team.</li>\n<li><code>draw_units(participant_ids, team_of, rng=random)</code>: a list of <code>{\"givers\": [...], \"receivers\": [...]}</code>: each unit gives <strong>one shared gift</strong> to another unit, and every unit receives once. <code>None</code> with fewer than two units.</li>\n<li><code>save_units(db, group_id, gifts)</code>: store the result with the group gifts of <a href=\"#details-28\">feature 28</a>, with the source <code>\"unit_draw\"</code>. A new unit draw <strong>replaces</strong> the previous one of the group, it never piles up.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>Three kinds of draw (across, within, units), a checkbox to avoid the pairs of the draw history, a confirmation before replacing a result, and the result in <code>st.expander(\"Organizer view\")</code>.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>A unit is only an id: once units are numbered, a draw between units is a draw between people. The draw between people is saved with <code>save_draw</code>, so all the other features keep working.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Also respect the exclusion rules of <a href=\"#details-10\">feature 10</a>. Give the budget of a unit gift: the budget of the group times the number of givers.</p>"
+      }
+    ]
   },
   {
     "number": 30,
     "title": "Gift split",
+    "slug": "30_gift_split",
     "goal": "Set the price of a group gift and decide how much each giver pays. Needs 28.",
-    "extra": true
+    "extra": true,
+    "needs": "<a href=\"#details-28\">28</a>",
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>create_tables(db)</code> and your own tables (a price per gift, a share per giver). <strong>Amounts are integer cents.</strong></li>\n<li><code>to_cents(amount)</code>: <code>19.99</code> → <code>1999</code> (and <code>0.1 + 0.2</code> → <code>30</code>). <code>format_amount(cents)</code>: <code>1999</code> → <code>\"19.99 €\"</code>.</li>\n<li><code>equal_shares(price_cents, giver_ids)</code>: <code>{giver: cents}</code> that <strong>always adds up to the price</strong>; the extra cents go to the first givers sorted by id (<code>1000</code> between 3 people: <code>334</code>, <code>333</code>, <code>333</code>).</li>\n<li><code>set_price(db, gift_id, price_cents)</code>: save the price and give every giver an equal share. <code>ValueError</code> for a price of 0 or less, or an unknown gift.</li>\n<li><code>set_shares(db, gift_id, shares)</code>: <code>{giver: cents}</code>. <code>ValueError</code> without price, with someone who is not a giver, with a negative amount, or when the total is not the price. Givers who are not in <code>shares</code> pay 0.</li>\n<li><code>get_split(db, gift_id)</code>: <code>{\"price_cents\", \"shares\": {giver: cents}}</code>, or <code>None</code> without price.</li>\n<li><code>person_totals(db, group_id)</code>: <code>{person: cents they pay for all the gifts of the group}</code>.</li>\n<li><code>shares_over_budget(db, group_id)</code>: the shares <strong>above</strong> the budget of the group (the limit itself is fine), as <code>{\"label\", \"participant_id\", \"amount_cents\"}</code>. The budget is in euros in <code>groups</code>.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>For the gifts the current person gives: a price field, an \"equal split\" button, a field per giver and a \"Save the shares\" button that shows the error message. Totals and warnings in the organizer view.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p><code>divmod(price, number_of_people)</code> gives the base share and the number of extra cents. <code>round(amount * 100)</code>.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Mark who has paid. Propose a split proportional to something (income, wishlist...).</p>"
+      }
+    ]
   },
   {
     "number": 31,
     "title": "Gift pool",
+    "slug": "31_gift_pool",
     "goal": "Everybody in a group except one person chips in for that person's gift. The person sees nothing before the due date, then discovers the amount collected.",
-    "extra": true
+    "extra": true,
+    "needs": "none",
+    "sections": [
+      {
+        "title": "Write in logic.py",
+        "html": "<ul>\n<li><code>create_tables(db)</code> and your own tables (the pools, the contributions). One pool per person and per group. <strong>Amounts are integer cents.</strong></li>\n<li><code>to_cents(amount)</code> and <code>format_amount(cents)</code>, as in <a href=\"#details-30\">feature 30</a> (copy them: this feature is independent).</li>\n<li><code>is_open(pool, today=None)</code>: contributions are possible <strong>until the day before</strong> the due date; on the due date the pool is closed.</li>\n<li><code>create_pool(db, group_id, creator_id, receiver_id, title, target_cents, due_date, today=None)</code>: return the id. <code>target_cents</code> can be <code>None</code> (no target). <code>ValueError</code> for an empty title, a creator who is the receiver, people outside the group, a target of 0 or less, a due date that is not in the future, or a person who already has a pool.</li>\n<li><code>contribute(db, pool_id, participant_id, amount_cents, today=None)</code>: a new contribution <strong>replaces</strong> the previous one of the same person (it is not added). <code>ValueError</code> for the receiver, someone outside the group, an amount of 0 or less, or a closed pool.</li>\n<li><code>withdraw(db, pool_id, participant_id, today=None)</code>: remove a contribution while the pool is open. <code>delete_pool(db, pool_id, participant_id)</code>: only the creator can.</li>\n<li><code>visible_pools(db, group_id, viewer_id)</code>: the pools of the group <strong>except the one for the viewer</strong>, each with <code>contributions</code> (<code>{person: cents}</code>) and <code>total_cents</code>.</li>\n<li><code>received_pool(db, group_id, viewer_id, today=None)</code>: the pool for the viewer <strong>once the due date is reached</strong>, otherwise <code>None</code>. Before that date the person must not learn that a pool exists.</li>\n</ul>"
+      },
+      {
+        "title": "The page",
+        "html": "<p>A form to start a pool, the pools you can chip in (progress bar if there is a target, a field and buttons), and, for the current person, a celebration with the total and the names of the contributors (no individual amounts) once the pool is received.</p>"
+      },
+      {
+        "title": "Hints",
+        "html": "<p>The secret is kept in <code>logic.py</code>, not only on the page: <code>visible_pools</code> and <code>received_pool</code> decide who sees what, and the tests check it. To compare dates, <code>date.fromisoformat</code>.</p>"
+      },
+      {
+        "title": "Going further",
+        "html": "<p>Thank-you message from the receiver. Suggest a share (target divided by the number of possible contributors). Warn when the due date is close and the target is far.</p>"
+      }
+    ]
   }
 ]

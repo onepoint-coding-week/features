@@ -183,25 +183,126 @@ a { color: inherit; }
 .tag:hover { background: color-mix(in srgb, var(--accent) 35%, transparent); }
 .tag__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
 
-.card--free { opacity: .5; }
-.card--free::before { background: var(--line); }
-.card--free:hover { opacity: .8; border-color: var(--line); box-shadow: none; }
 .card--extra::before { background: var(--iridescent); }
-.card--extra:hover { border-color: var(--line); box-shadow: none; }
-.card__free { margin-top: auto; font-size: .85rem; color: var(--muted); font-style: italic; }
+
+.card--feature { cursor: pointer; }
+.card--feature .tag { margin-top: 0; }
+.card__note { margin: 0; font-size: .85rem; color: var(--muted); font-style: italic; }
+.card__more {
+  margin-top: auto; padding-top: 4px;
+  font-size: .9rem; font-weight: 600; text-decoration: none; color: var(--blue-light);
+}
+.card__more:hover { text-decoration: underline; }
+
+/* Fenêtre de détail d'une feature */
+body:has(.details[open]) { overflow: hidden; }
+
+.details {
+  --accent: var(--blue);
+  width: min(920px, calc(100% - 2 * var(--gutter))); max-height: calc(100dvh - 48px);
+  margin: auto; padding: 0; overflow-y: auto; overscroll-behavior: contain;
+  color: var(--white); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 24px;
+  box-shadow: 0 40px 120px -20px rgba(131, 41, 149, .55);
+}
+.details::backdrop { background: rgba(0, 0, 0, .72); backdrop-filter: blur(6px); }
+.details[open] { animation: rise .25s ease-out; }
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } }
+
+.details__close {
+  position: sticky; top: 12px; float: right; z-index: 1; margin: 12px 12px 0 0;
+  width: 40px; height: 40px; border-radius: 50%;
+  font: 600 1.5rem/1 "Poppins", sans-serif; color: var(--white);
+  background: rgba(255, 255, 255, .08); border: 1px solid var(--line); cursor: pointer;
+}
+.details__close:hover { background: rgba(255, 255, 255, .16); }
+
+.details__body { padding: 28px 32px 36px; }
+
+.details__head {
+  display: flex; flex-direction: column; gap: 14px;
+  padding-bottom: 24px; border-bottom: 1px solid var(--line);
+}
+.details__head .card__number { font-size: 3.4rem; }
+.details__title { margin: 0; font-weight: 900; font-style: italic; font-size: clamp(1.6rem, 4vw, 2.2rem); line-height: 1.1; }
+.details__goal { margin: 0; font-size: 1.1rem; font-weight: 300; color: var(--mist); }
+.details__teams { display: flex; flex-wrap: wrap; gap: 8px; }
+.details__teams .tag { margin-top: 0; }
+.details__needs { margin: 0; color: var(--mist); }
+
+.details__block { padding-top: 24px; }
+.details__block h3 {
+  display: flex; align-items: center; gap: 10px; margin: 0 0 12px;
+  font-size: .8rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+}
+.details__block h3::before { content: ""; width: 18px; height: 3px; border-radius: 2px; background: var(--accent); }
+
+.details code {
+  padding: 1px 6px; border-radius: 6px; font-size: .88em;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: rgba(255, 255, 255, .08); color: var(--mist); overflow-wrap: anywhere;
+}
+.details a { color: var(--blue-light); }
+.details .tag { color: var(--white); }
+
+.files, .commands, .done { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.files li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.files span { min-width: 92px; font-size: .9rem; color: var(--muted); }
+.commands { margin-top: 14px; }
+.commands li {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 10px 10px 14px; border-radius: 12px; background: var(--black); border: 1px solid var(--line);
+}
+.commands code { min-width: 0; overflow-x: auto; white-space: nowrap; overflow-wrap: normal; background: none; padding: 0; color: var(--blue-light); }
+.copy {
+  flex: none; padding: 4px 12px; border-radius: 999px; cursor: pointer;
+  font: 600 .8rem "Poppins", sans-serif; color: var(--white);
+  background: rgba(255, 255, 255, .08); border: 1px solid var(--line);
+}
+.copy:hover { background: rgba(255, 255, 255, .16); }
+
+.steps {
+  counter-reset: step; margin: 0; padding: 0; list-style: none;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 12px;
+}
+.steps li {
+  counter-increment: step; position: relative;
+  padding: 16px; border-radius: 16px; background: var(--surface-2); border: 1px solid var(--line);
+}
+.steps li::before {
+  content: counter(step); display: grid; place-items: center;
+  width: 32px; height: 32px; margin-bottom: 10px; border-radius: 50%;
+  font-weight: 900; font-style: italic; background: var(--iridescent);
+}
+.steps strong { display: block; margin-bottom: 4px; }
+.steps p { margin: 0; font-size: .9rem; font-weight: 300; color: var(--mist); }
+
+.spec__body { color: var(--mist); font-weight: 300; }
+.spec__body > :first-child { margin-top: 0; }
+.spec__body > :last-child { margin-bottom: 0; }
+.spec__body ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+.spec__body li::marker { color: var(--accent); }
+.spec__body strong { color: var(--white); font-weight: 600; }
+
+.done li { position: relative; padding-left: 30px; color: var(--mist); font-weight: 300; }
+.done li::before {
+  content: ""; position: absolute; left: 0; top: .2em;
+  width: 18px; height: 18px; border-radius: 5px; border: 2px solid var(--accent);
+}
 
 /* Pied de page */
 .footer {
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px;
-  padding: 40px var(--gutter) 56px; color: var(--muted);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 28px;
+  padding: 40px var(--gutter) 56px; font-size: 1.4rem; color: var(--muted);
 }
-.footer { gap: 28px; font-size: 1.4rem; }
 .footer__logo { width: auto; }
 .footer__logo--onepoint { height: 64px; }
 .footer__logo--cs { height: 64px; }
 .footer__logo--aws { height: 56px; }
 
 @media (max-width: 760px) {
+  .details { width: 100%; max-height: 100dvh; height: 100dvh; max-width: none; border-radius: 0; }
+  .details__body { padding: 8px var(--gutter) 32px; }
   .hero { padding-top: 16px; }
   .hero__inner { grid-template-columns: 1fr; gap: 8px; }
   .hero__visual { max-width: 320px; margin: 0 auto; }
