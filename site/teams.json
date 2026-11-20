@@ -1,0 +1,252 @@
+[
+  {
+    "number": 1,
+    "name": "Ada Lovelace",
+    "members": [
+      "Alexandre F.",
+      "Cyril D.",
+      "Federico M.",
+      "Louis P.",
+      "Martin D.",
+      "Pablo C."
+    ],
+    "feature": 17
+  },
+  {
+    "number": 2,
+    "name": "Alan Turing",
+    "members": [
+      "Elie C.",
+      "Emils S.",
+      "Harold C.",
+      "Lucas P.",
+      "Nathan A."
+    ],
+    "feature": 21
+  },
+  {
+    "number": 3,
+    "name": "Grace Hopper",
+    "members": [
+      "April H.",
+      "Florent M.",
+      "Ghali L.",
+      "Max P.",
+      "Stanislas L.",
+      "Zoé C."
+    ],
+    "feature": 10
+  },
+  {
+    "number": 4,
+    "name": "Charles Babbage",
+    "members": [
+      "Alestria M.",
+      "Marie M.",
+      "Pauline R.",
+      "Quentin S.",
+      "Remi J.",
+      "Sarah A."
+    ],
+    "feature": 12
+  },
+  {
+    "number": 5,
+    "name": "Katherine Johnson",
+    "members": [
+      "Ahmed S.",
+      "Anouk P.",
+      "Elyna B.",
+      "Gaelle P.",
+      "Jonathan G.",
+      "Zakarye M."
+    ],
+    "feature": 22
+  },
+  {
+    "number": 6,
+    "name": "John von Neumann",
+    "members": [
+      "Julie C.",
+      "Lily-Nan P.",
+      "Luca B.",
+      "Nihman A.",
+      "Rafael B.",
+      "Yushin B."
+    ],
+    "feature": 20
+  },
+  {
+    "number": 7,
+    "name": "Margaret Hamilton",
+    "members": [
+      "Alix O.",
+      "Etienne P.",
+      "Livio R.",
+      "Themi C.",
+      "Tomoe T."
+    ],
+    "feature": 14
+  },
+  {
+    "number": 8,
+    "name": "Tim Berners-Lee",
+    "members": [
+      "Aya B.",
+      "Isaure B.",
+      "Jeanne G.",
+      "Leila B.",
+      "Maria-Sara M.",
+      "Milla B."
+    ],
+    "feature": 15
+  },
+  {
+    "number": 9,
+    "name": "Barbara Liskov",
+    "members": [
+      "Amélia H.",
+      "Andreas H.",
+      "Hedi K.",
+      "Marie-Ève A.",
+      "Ryan E.",
+      "Tiago M."
+    ],
+    "feature": 13
+  },
+  {
+    "number": 10,
+    "name": "Linus Torvalds",
+    "members": [
+      "Ala L.",
+      "Alexandre G.",
+      "Emily S.",
+      "Sokhna Diarra M.",
+      "Victor H."
+    ],
+    "feature": 16
+  },
+  {
+    "number": 11,
+    "name": "Frances Allen",
+    "members": [
+      "Alexandre G.",
+      "Augustin R.",
+      "Edgar R.",
+      "Helios J.",
+      "Maël M.",
+      "Valentino P."
+    ],
+    "feature": 1
+  },
+  {
+    "number": 12,
+    "name": "Donald Knuth",
+    "members": [
+      "Nikolaos P.",
+      "Salim S.",
+      "Sebastien C.",
+      "Sergio M.",
+      "Yann D."
+    ],
+    "feature": 5
+  },
+  {
+    "number": 13,
+    "name": "Shafi Goldwasser",
+    "members": [
+      "Augustin V.",
+      "Hugo H.",
+      "Mats B.",
+      "Maxence P.",
+      "Paul M.",
+      "Paul-Emile H."
+    ],
+    "feature": 18
+  },
+  {
+    "number": 14,
+    "name": "Dennis Ritchie",
+    "members": [
+      "Catherine M.",
+      "Célia V.",
+      "Domitille M.",
+      "Eva M.",
+      "Thaïs G."
+    ],
+    "feature": 6
+  },
+  {
+    "number": 15,
+    "name": "Katie Bouman",
+    "members": [
+      "Katerina K.",
+      "Luna M.",
+      "Léo E.",
+      "Léonie M.",
+      "Mathilin N."
+    ],
+    "feature": 7
+  },
+  {
+    "number": 16,
+    "name": "Edsger Dijkstra",
+    "members": [
+      "Aurélie M.",
+      "Eylül A.",
+      "Louis E.",
+      "Louise N.",
+      "Margaux K.",
+      "Maya L."
+    ],
+    "feature": 19
+  },
+  {
+    "number": 17,
+    "name": "Anita Borg",
+    "members": [
+      "Anselme R.",
+      "Gustave B.",
+      "Léon B.",
+      "Noah C.",
+      "Sven B."
+    ],
+    "feature": 11
+  },
+  {
+    "number": 18,
+    "name": "Steve Wozniak",
+    "members": [
+      "Blanche B.",
+      "Diane F.",
+      "Elsa D.",
+      "Isaure Marie Aurelie F.",
+      "Paloma A."
+    ],
+    "feature": 9
+  },
+  {
+    "number": 19,
+    "name": "Mary Jackson",
+    "members": [
+      "Auréanne B.",
+      "Mahreen S.",
+      "Maksim V.",
+      "Noah H.",
+      "Tealy P."
+    ],
+    "feature": 4
+  },
+  {
+    "number": 20,
+    "name": "Jack Kilby",
+    "members": [
+      "Ema Paz P.",
+      "Emily S.",
+      "Isabella I.",
+      "Lucille J.",
+      "Sara E."
+    ],
+    "feature": 3
+  }
+]

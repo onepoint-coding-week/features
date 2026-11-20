@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Coding Week Teams</title>
+  <meta name="description" content="Coding Week 2026: the teams of the Secret Santa project and the feature each one builds.">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="assets/cloud.webp" type="image/webp">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,600;0,800;0,900;1,800;1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="hero">
+    <img class="hero__sphere" src="assets/sphere.webp" alt="" aria-hidden="true">
+    <div class="hero__inner">
+      <img class="hero__visual" src="assets/hero.webp" alt="Coding Week 2026 sticker laptop, 23 to 27 November" width="900" height="900">
+      <div class="hero__text">
+        <p class="hero__kicker">The Dev Club · 23 → 27 Nov</p>
+        <h1 class="hero__title" data-shadow="Coding Week 2026">Coding Week 2026</h1>
+        <p class="hero__subtitle">Secret Santa: 20 teams, one app. Find your team, your teammates and the feature you build this week.</p>
+        <nav class="hero__nav" aria-label="Sections">
+          <a class="pill pill--solid" href="#teams">The teams</a>
+          <a class="pill" href="#features">The features</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="teams" class="section" aria-labelledby="teams-title">
+      <div class="section__head">
+        <h2 id="teams-title" class="section__title">The teams <img src="assets/cloud.webp" alt="" aria-hidden="true" class="section__icon"></h2>
+        <label class="search">
+          <span class="visually-hidden">Find a team, a name or a feature</span>
+          <input id="search" type="search" placeholder="Find your name, a team, a feature…" autocomplete="off">
+        </label>
+      </div>
+      <p id="search-status" class="section__status" aria-live="polite"></p>
+      <div id="team-grid" class="grid grid--teams"></div>
+    </section>
+
+    <section id="features" class="section" aria-labelledby="features-title">
+      <div class="section__head">
+        <h2 id="features-title" class="section__title">The features <img src="assets/gift.webp" alt="" aria-hidden="true" class="section__icon section__icon--gift"></h2>
+      </div>
+      <p class="section__lead">Each team builds one feature of the Secret Santa app. Its tests and its card in the student guide describe what it must do.</p>
+      <div id="feature-grid" class="grid grid--features"></div>
+
+      <h3 class="section__subtitle">Extra features</h3>
+      <p class="section__lead">Finished early? Pick one of these with your mentor.</p>
+      <div id="extra-grid" class="grid grid--features"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <img src="assets/onepoint.svg" alt="onepoint" class="footer__logo footer__logo--onepoint">
+    <span aria-hidden="true">×</span>
+    <img src="assets/centralesupelec.svg" alt="CentraleSupélec" class="footer__logo footer__logo--cs">
+    <span aria-hidden="true">×</span>
+    <img src="assets/aws.webp" alt="powered by AWS" class="footer__logo footer__logo--aws">
+  </footer>
+
+  <noscript><p class="section">This page needs JavaScript to show the teams.</p></noscript>
+</body>
+</html>
