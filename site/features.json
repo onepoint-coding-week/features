@@ -25,31 +25,6 @@
     ]
   },
   {
-    "number": 2,
-    "title": "Participants",
-    "slug": "02_participants",
-    "goal": "Add, list and remove the people of a group.",
-    "extra": false,
-    "sections": [
-      {
-        "title": "Write in logic.py",
-        "html": "<ul>\n<li><code>add_participant(db, group_id, name, email)</code>: add the person and return the new id. Spaces around the name are removed and the email is lowercased. Raise <code>ValueError</code> for an empty name, an email without <code>@</code>, or an email already in this group (the same email is allowed in another group).</li>\n<li><code>list_participants(db, group_id)</code>: the people of this group only, sorted by name.</li>\n<li><code>delete_participant(db, participant_id)</code>: remove the person. Their group's draw becomes invalid, so it is cancelled too (delete the group's rows in <code>assignments</code>).</li>\n</ul>"
-      },
-      {
-        "title": "The page",
-        "html": "<p>A form (name, email), a counter of participants, the list with a delete button for each person.</p>"
-      },
-      {
-        "title": "Hints",
-        "html": "<p><code>str.strip()</code> and <code>str.lower()</code>. To refuse a duplicate, ask <code>exists(...)</code> first, then <code>insert(...)</code>. When someone is deleted, find their group with <code>find_one(...)</code> before deleting them. After a delete, <code>st.rerun()</code> refreshes the list. Use <code>st.form</code> so the page does not rerun on every keystroke.</p>"
-      },
-      {
-        "title": "Going further",
-        "html": "<p>Edit a participant. Search box. Ask for confirmation before deleting.</p>"
-      }
-    ]
-  },
-  {
     "number": 3,
     "title": "Wishlist",
     "slug": "03_wishlist",
